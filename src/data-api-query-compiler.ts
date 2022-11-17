@@ -1,5 +1,6 @@
 import { SqlParameter } from "aws-sdk/clients/rdsdataservice";
 import { MysqlQueryCompiler, PostgresQueryCompiler } from "kysely";
+import {validate as isUUID} from "uuid";
 
 export class PostgresDataApiQueryCompiler extends PostgresQueryCompiler {
   protected override appendValue(value: unknown) {
@@ -32,6 +33,7 @@ export class MysqlDataApiQueryCompiler extends MysqlQueryCompiler {
 }
 
 function serialize(value: unknown): Pick<SqlParameter, "typeHint" | "value"> {
+  console.log(typeof value)
   switch (typeof value) {
   case "bigint":
     return { value: { doubleValue: Number(value) } };
@@ -66,6 +68,12 @@ function serialize(value: unknown): Pick<SqlParameter, "typeHint" | "value"> {
     else
       break;
   case "string":
+    if (isUUID(value)) {
+      return {
+        typeHint: "UUID",
+        value: { stringValue: value }
+      };
+    }
     return {
       value: { stringValue: value },
     };
