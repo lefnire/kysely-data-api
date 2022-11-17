@@ -90,6 +90,7 @@ class DataApiConnection implements DatabaseConnection {
   }
 
   async executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
+    console.log("custom executeQuery")
     const r = await this.#config.client
       .executeStatement({
         transactionId: this.#transactionId,
